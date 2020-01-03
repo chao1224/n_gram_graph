@@ -1,20 +1,6 @@
 from __future__ import print_function
 
 import pandas as pd
-import numpy as np
-import json
-from rdkit import Chem
-from rdkit.Chem import AllChem, MolFromSmiles, MolFromMolBlock, MolToSmarts
-from sklearn.model_selection import KFold
-import os
-import sys
-sys.path.insert(0, '../src')
-sys.path.insert(0, '../graph_methods')
-from graph_util import *
-import nltk
-import csv
-from data_preprocess import *
-from prepare_n_grammed_graph import *
 
 np.random.seed(123)
 tox21_tasks = ['NR-AR', 'NR-AR-LBD', 'NR-AhR', 'NR-Aromatase', 'NR-ER', 'NR-ER-LBD', 'NR-PPAR-gamma',

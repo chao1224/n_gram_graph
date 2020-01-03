@@ -1,20 +1,11 @@
 from __future__ import print_function
 
 import pandas as pd
-import numpy as np
-import json
 from rdkit import Chem
 from rdkit.Chem import AllChem, MolFromSmiles, MolFromMolBlock, MolToSmarts
 from sklearn.model_selection import StratifiedKFold
-import os
-import sys
-sys.path.insert(0, '../src')
-sys.path.insert(0, '../graph_methods')
-from graph_util import *
-import nltk
-import csv
 from data_preprocess import *
-from prepare_n_grammed_graph import *
+import os
 
 np.random.seed(123)
 target_names = ['NR-AR', 'NR-AR-LBD', 'NR-AhR', 'NR-Aromatase', 'NR-ER', 'NR-ER-LBD', 'NR-PPAR-gamma', 'SR-ARE', 'SR-ATAD5', 'SR-HSE', 'SR-MMP', 'SR-p53']

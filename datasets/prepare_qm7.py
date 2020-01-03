@@ -1,14 +1,11 @@
 from __future__ import print_function
 
 import pandas as pd
-import numpy as np
-import json
 from rdkit import Chem
 from rdkit.Chem import AllChem, MolFromSmiles
 from sklearn.model_selection import KFold
-import os
-import sys
 from data_preprocess import *
+import os
 
 
 np.random.seed(123)

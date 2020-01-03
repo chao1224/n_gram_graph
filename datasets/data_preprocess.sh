@@ -10,3 +10,6 @@ python prepare_qm9.py > prepare_qm9.out
 
 # classification datasets
 python prepare_tox21.py > prepare_tox21.out
+python prepare_clintox.py > prepare_clintox.out
+python prepare_muv.py > prepare_muv.out
+python prepare_hiv.py > prepare_hiv.out
