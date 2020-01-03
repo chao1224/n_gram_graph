@@ -1,0 +1,23 @@
+{
+  "max_depth": 10,
+  "learning_rate": 1e-1,
+  "n_estimators": 100,
+  "booster": "gbtree",
+  "objective": "reg:linear",
+  "subsample": 1,
+  "colsample_bylevel": 1,
+  "colsample_bytree": 1,
+  "min_child_weight": 1,
+  "reg_alpha": 0,
+  "reg_lambda": 1,
+  "scale_pos_weight": 1,
+
+  "early_stopping": {
+      "eval_metric": "AUC[PR]",
+      "round": 300
+  },
+  "enrichment_factor": {
+    "ratio_list": [0.02, 0.01, 0.0015, 0.001]
+  },
+  "random_seed": 1337
+}
