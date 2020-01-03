@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-task_list=(delaney malaria cep qm7)
-task_list=(E1-CC2 E2-CC2 f1-CC2 f2-CC2 E1-PBE0 E2-PBE0 f1-PBE0 f2-PBE0 E1-CAM E2-CAM f1-CAM f2-CAM)
-task_list=(mu alpha homo lumo gap r2 zpve cv u0 u298 h298 g298)
-
 running_index_list=(0 1 2 3 4)
 model_list=(n_gram_rf n_gram_xgb)
 task_list=(delaney)

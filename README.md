@@ -20,7 +20,7 @@ bash data_preprocess.sh
 
 ### 3. Run Models
 
-This shows the test script for task `Delaney`.
+The cmds below include the demo scripts for running task `Delaney`.
 
 #### 3.1 Run the Node-Level and Graph-Level Embedding
 
