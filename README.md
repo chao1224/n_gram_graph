@@ -25,7 +25,7 @@ The cmds below include the demo scripts for running task `Delaney`.
 #### 3.1 Run the Node-Level and Graph-Level Embedding
 
 ```
-cd n_gram_graph/node2vec
+cd n_gram_graph/embedding
 bash test.sh
 ```
 

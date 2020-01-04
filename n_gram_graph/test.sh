@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+task_list=(hiv MUV-466 SR-p53 CT_TOX)
+task_list=(delaney malaria cep qm7 E1-CC2)
+task_list=(delaney)
 running_index_list=(0 1 2 3 4)
 model_list=(n_gram_rf n_gram_xgb)
-task_list=(delaney)
 
 for task in "${task_list[@]}"; do
     for model in "${model_list[@]}"; do

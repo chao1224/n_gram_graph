@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
+task_list=(delaney muv/MUV-548 tox21/SR-HSE)
 task_list=(delaney)
-task_list=(delaney malaria cep qm7 qm8 hiv tox21/NR-AR muv/MUV-466)
 running_index_list=(0 1 2 3 4)
 
 for task in "${task_list[@]}"; do

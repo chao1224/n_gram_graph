@@ -4,9 +4,6 @@ task_list=(hiv MUV-466 MUV-548 MUV-600 MUV-644 MUV-652 MUV-689 MUV-692 MUV-712 M
 running_index_list=(0 1 2 3 4)
 model_list=(n_gram_rf n_gram_xgb)
 
-task_list=(hiv MUV-466 SR-p53 CT_TOX)
-running_index_list=(0)
-
 for task in "${task_list[@]}"; do
     for model in "${model_list[@]}"; do
         for running_index in "${running_index_list[@]}"; do
@@ -14,7 +11,7 @@ for task in "${task_list[@]}"; do
 
             python main_classification.py \
             --task="$task" \
-            --config_json_file=../config/"$model"_classification.json \
+            --config_json_file=../config/"$model"/"$task".json \
             --weight_file=temp.pt \
             --running_index="$running_index" \
             --model="$model" > ../output/"$model"/"$running_index"/"$task".out

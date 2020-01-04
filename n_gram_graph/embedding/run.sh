@@ -14,9 +14,6 @@ muv/MUV-832 muv/MUV-846 muv/MUV-852 muv/MUV-858
 muv/MUV-859 hiv clintox/CT_TOX clintox/FDA_APPROVED)
 running_index_list=(0 1 2 3 4)
 
-task_list=(delaney muv/MUV-548 tox21/SR-HSE)
-running_index_list=(0)
-
 for task in "${task_list[@]}"; do
     for running_index in "${running_index_list[@]}"; do
         mkdir -p ./output/"$task"/"$running_index"
