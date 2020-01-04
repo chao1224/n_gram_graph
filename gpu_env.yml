@@ -14,7 +14,6 @@ dependencies:
   - pip=9.0.1
   - py-xgboost=0.80
   - xgboost=0.80
-  - nltk=3.4.5
   - rdkit=2018.03.4.0
   - setuptools=40.6.3
   - pytorch=0.3.1

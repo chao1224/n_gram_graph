@@ -1,141 +1,11 @@
 from __future__ import print_function
 
 import pandas as pd
-import json
 from rdkit import Chem
 from rdkit.Chem import AllChem, MolFromSmiles, MolFromMolBlock, MolToSmarts
 from graph_util import *
-import nltk
 
 np.random.seed(123)
-
-
-def prepare_SMILES_mapping(data_file_list, json_file):
-    dictionary_set = set()
-    for data_file in data_file_list:
-        data_pd = pd.read_csv(data_file)
-        SMILES_list = data_pd['smiles'].tolist()
-
-        for SMILES in SMILES_list:
-            dictionary_set = dictionary_set | set(list(SMILES))
-        print('Character set size in {}: {}'.format(data_file, len(dictionary_set)))
-
-    dictionary = {}
-    for index, element in enumerate(dictionary_set):
-        dictionary[element] = index
-
-    with open(json_file, 'w') as f:
-        json.dump(dictionary, f)
-    return
-
-
-def get_grammar_tokenizer(cfg):
-    long_tokens = filter(lambda a: len(a) > 1, cfg._lexical_index.keys())
-    replacements = ['!', '?', '$', '^', '&']
-    # print('long_tokens {} replaced by {}'.format(long_tokens, replacements))
-    assert len(long_tokens) == len(replacements)
-    for token in replacements:
-        assert not cfg._lexical_index.has_key(token)
-
-    def tokenize(smiles):
-        for i, token in enumerate(long_tokens):
-            smiles = smiles.replace(token, replacements[i])
-        tokens = []
-        for token in smiles:
-            try:
-                ix = replacements.index(token)
-                tokens.append(long_tokens[ix])
-            except:
-                tokens.append(token)
-        return tokens
-
-    return tokenize
-
-
-def get_largest_grammar_productions(data_path):
-    import grammar
-
-    productions_list = grammar.GCFG.productions()
-    prod_index_map = {}
-    for ix, prod in enumerate(productions_list):
-        prod_index_map[prod] = ix
-    parser = nltk.ChartParser(grammar.GCFG)
-    MAX_LEN = 0
-
-    debugging_list = ['c1ccc(cc1)C2CC(=O)CC([Se]2)c3ccccc3',
-                      'C(#N)c1c(c(c(nc1N)[Se]CC(=O)N)C#N)c2ccco2',
-                      'c1cc2c3c(c1)C(=O)Nc3c(cc2[S-](=O)(NC(C4C5CC6CC(C5)CC4C6)C)[O-])[S-](=O)(NC(C7C8CC9CC(C8)CC7C9)C)[O-]',
-                      '[Fe]123456789[C@H]%10[C@H]1[C@]21N=CC=C(N(C)C)C31C4%10.C1=CC=C(C=C1)[C@@]51[C@@]6(C2=CC=CC=C2)C7(C2=CC=CC=C2)C8(C2=CC=CC=C2)[C@]91C1=CC=CC=C1',
-                      ]
-
-    data_pd = pd.read_csv(data_path)
-    for idx, line in enumerate(data_pd['SMILES']):
-        print(idx)
-        smiles = line.strip()
-        print('smiles\t', smiles)
-
-        tokenizer = get_grammar_tokenizer(grammar.GCFG)
-        tokens = map(tokenizer, [smiles])
-        parser_tree = parser.parse(tokens[0]).next()
-        production_seq = parser_tree.productions()
-        indices = np.array([prod_index_map[prod] for prod in production_seq])
-        num_productions = len(indices)
-        MAX_LEN = max(MAX_LEN, num_productions)
-    print('Max num of productions: {}'.format(MAX_LEN))
-    return
-
-
-def extract_smiles_grammar_embedding(data_path, out_file_path, label_name=None):
-    import grammar
-
-    MAX_LEN = 325
-    productions_list = grammar.GCFG.productions()
-    prod_index_map = {}
-    for ix, prod in enumerate(productions_list):
-        prod_index_map[prod] = ix
-    parser = nltk.ChartParser(grammar.GCFG)
-
-    one_hot_matrix = []
-
-    data_pd = pd.read_csv(data_path)
-    valid_index = []
-    for line_idx, line in enumerate(data_pd['SMILES']):
-        # print(line_idx)
-        smiles = line.strip()
-        # print('smiles\t', smiles)
-
-        tokenizer = get_grammar_tokenizer(grammar.GCFG)
-        tokens = map(tokenizer, [smiles])
-        # print('tokens\t', tokens)
-        parser_tree = parser.parse(tokens[0]).next()
-        production_seq = parser_tree.productions()
-        indices = np.array([prod_index_map[prod] for prod in production_seq])
-        # print('indices:\t', indices)
-        one_hot = np.zeros((MAX_LEN, len(productions_list)), dtype=np.float32)
-        # print('one hot shape\t', one_hot.shape)
-        num_productions = len(indices)
-        if num_productions > MAX_LEN:
-            print('ignore {}'.format(line_idx))
-            continue
-        valid_index.append(line_idx)
-
-        one_hot[np.arange(num_productions), indices] = 1.
-        one_hot[np.arange(num_productions, MAX_LEN), -1] = 1.
-        one_hot_matrix.append(one_hot)
-
-    one_hot_matrix = np.asarray(one_hot_matrix)
-    print(one_hot_matrix.shape)
-
-    if label_name is None:
-        np.savez_compressed(out_file_path, one_hot_matrix=one_hot_matrix)
-    else:
-        true_labels = data_pd[label_name].tolist()
-        true_labels = np.array(true_labels)
-        valid_index = np.array(valid_index)
-        true_labels = true_labels[valid_index]
-        print('true labels\t', true_labels.shape)
-        np.savez_compressed(out_file_path, one_hot_matrix=one_hot_matrix, label_name=true_labels)
-    return
 
 
 def extract_graph(data_path, out_file_path, max_atom_num, label_name=None):
@@ -188,15 +58,12 @@ def extract_graph(data_path, out_file_path, max_atom_num, label_name=None):
         atom_positions = [None for _ in range(mol.GetNumAtoms()+1)]
         for atom in mol.GetAtoms():
             atom_idx = atom.GetIdx()
-            # print('atom id {} - {}'.format(atom_idx, atom.is_donor))
             symbol_candidates.add(atom.GetSymbol())
             atom_positions[atom_idx] = conformer.GetAtomPosition(atom_idx)
-            ####
             degree_set.add(atom.GetDegree())
             h_num_set.add(atom.GetTotalNumHs())
             implicit_valence_set.add(atom.GetImplicitValence())
             charge_set.add(atom.GetFormalCharge())
-            ####
             node_attribute_matrix[atom_idx] = extract_atom_features(atom,
                                                                     is_acceptor=atom_idx in acceptor_atom_ids,
                                                                     is_donor=atom_idx in donor_atom_ids)
@@ -230,12 +97,10 @@ def extract_graph(data_path, out_file_path, max_atom_num, label_name=None):
     print(symbol_candidates)
     print('{} valid out of {}'.format(len(valid_index), len(smiles_list)))
 
-    ###
     print('degree set:\t', degree_set)
     print('h num set: \t', h_num_set)
     print('implicit valence set: \t', implicit_valence_set)
     print('charge set:\t', charge_set)
-    ###
 
     if label_name is None:
         np.savez_compressed(out_file_path,
@@ -278,12 +143,10 @@ def extract_graph_multi_tasks(data_path, out_file_path, max_atom_num, task_list)
     distance_matrix_list = []
     valid_index = []
 
-    ###
     degree_set = set()
     h_num_set = set()
     implicit_valence_set = set()
     charge_set = set()
-    ###
 
     for line_idx, smiles in enumerate(smiles_list):
         smiles = smiles.strip()
@@ -350,12 +213,10 @@ def extract_graph_multi_tasks(data_path, out_file_path, max_atom_num, task_list)
     print(symbol_candidates)
     print('{} valid out of {}'.format(len(valid_index), len(smiles_list)))
 
-    ###
     print('degree set:\t', degree_set)
     print('h num set: \t', h_num_set)
     print('implicit valence set: \t', implicit_valence_set)
     print('charge set:\t', charge_set)
-    ###
 
     kwargs = {}
     kwargs['adjacent_matrix_list'] = adjacent_matrix_list
@@ -456,12 +317,10 @@ def extract_graph_multi_tasks_SDF(data_path, sdf_data_path, out_file_path, max_a
     print(symbol_candidates)
     print('{} valid out of {}'.format(len(valid_index), len(smiles_list)))
 
-    ###
     print('degree set:\t', degree_set)
     print('implicit valence set: \t', implicit_valence_set)
     print('charge set:\t', charge_set)
     print('hybridization set:\t', hybridization_set)
-    ###
 
     kwargs = {}
     kwargs['adjacent_matrix_list'] = adjacent_matrix_list
@@ -477,9 +336,3 @@ def extract_graph_multi_tasks_SDF(data_path, sdf_data_path, out_file_path, max_a
     np.savez_compressed(out_file_path, **kwargs)
     print()
     return
-
-
-if __name__ == '__main__':
-    # prepare_SMILES_mapping(data_file_list=['tox21.csv.gz'],
-    #                        json_file='../run_tox21/SMILES_mapping_tox21.json')
-    pass

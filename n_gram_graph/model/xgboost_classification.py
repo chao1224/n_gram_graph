@@ -1,10 +1,9 @@
 from __future__ import print_function
 
 import argparse
-import pandas as pd
 import numpy as np
 
-import n_gram_graph as ngg
+import n_gram_graph
 from n_gram_graph.util import *
 from n_gram_graph.evaluation import *
 from xgboost import XGBClassifier

@@ -6,19 +6,12 @@ dataset2task_list = {
         ],
     'muv':
         [
-
             'MUV-466', 'MUV-548', 'MUV-600', 'MUV-644', 'MUV-652', 'MUV-689',
             'MUV-692', 'MUV-712', 'MUV-713', 'MUV-733', 'MUV-737', 'MUV-810',
             'MUV-832', 'MUV-846', 'MUV-852', 'MUV-858', 'MUV-859'
         ],
     'hiv': ['hiv'],
     'clintox': ['CT_TOX', 'FDA_APPROVED'],
-    'pcba':
-        [
-
-            'PCBA-927', 'PCBA-903', 'PCBA-493208', 'PCBA-904', 'PCBA-885',
-            'PCBA-914', 'PCBA-915', 'PCBA-720532', 'PCBA-883', 'PCBA-891', 'PCBA-899', 'PCBA-884'
-        ],
     'delaney': ['delaney'],
     'malaria': ['malaria'],
     'cep': ['cep'],

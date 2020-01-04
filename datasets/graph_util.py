@@ -7,15 +7,6 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
-atom_candidates = ['C', 'N', 'O', 'S', 'F', 'Si', 'P', 'Cl', 'Br', 'Mg', 'Na',
-                   'Ca', 'Fe', 'As', 'Al', 'I', 'B', 'V', 'K', 'Tl', 'Yb',
-                   'Sb', 'Sn', 'Ag', 'Pd', 'Co', 'Se', 'Ti', 'Zn', 'H',  # H?
-                   'Li', 'Ge', 'Cu', 'Au', 'Ni', 'Cd', 'In', 'Mn', 'Zr',
-                   'Cr', 'Pt', 'Hg', 'Pb', 'Unknown']
-
-# atom_candidates = ['C', 'Cl', 'I', 'F', 'O', 'N', 'P', 'S', 'Br', 'B', 'Si', 'Se', 'Unknown']
-
 atom_candidates = ['C', 'Cl', 'I', 'F', 'O', 'N', 'P', 'S', 'Br', 'Unknown']
 
 possible_hybridization_list = [
@@ -24,6 +15,7 @@ possible_hybridization_list = [
     Chem.rdchem.HybridizationType.SP3D2
 ]
 
+
 def one_of_k_encoding(x, allowable_set):
     if x not in allowable_set:
         raise Exception("input {0} not in allowable set{1}:".format(x, allowable_set))
@@ -31,7 +23,6 @@ def one_of_k_encoding(x, allowable_set):
 
 
 def one_of_k_encoding_unk(x, allowable_set):
-    # Maps inputs not in the allowable set to the last element
     if x not in allowable_set:
         logging.info('Unknown detected: {}'.format(x))
         x = allowable_set[-1]
@@ -39,7 +30,6 @@ def one_of_k_encoding_unk(x, allowable_set):
 
 
 def extract_atom_features(atom, explicit_H=False, is_acceptor=0, is_donor=0):
-    # atom.GetHybridization()
     if explicit_H:
         return np.array(one_of_k_encoding_unk(atom.GetSymbol(), atom_candidates) +
                         one_of_k_encoding(atom.GetDegree(), [0, 1, 2, 3, 4, 5, 6]) +
@@ -72,7 +62,6 @@ def extract_bond_features(bond):
 
 
 def num_atom_features(explicit_H=False):
-    # Return length of feature vector using a very simple molecule.
     m = Chem.MolFromSmiles('CC')
     alist = m.GetAtoms()
     a = alist[0]
@@ -80,12 +69,10 @@ def num_atom_features(explicit_H=False):
 
 
 def num_bond_features():
-    # Return length of feature vector using a very simple molecule.
     simple_mol = Chem.MolFromSmiles('CC')
     Chem.SanitizeMol(simple_mol)
     return len(extract_bond_features(simple_mol.GetBonds()[0]))
 
 
 def get_atom_distance(atom_a, atom_b):
-    # print('atom a: {},{},{}, atom b: {},{},{}'.format(atom_a.x, atom_a.y, atom_a.z, atom_b.x, atom_b.y, atom_b.z))
     return math.sqrt((atom_a.x - atom_b.x) ** 2 + (atom_a.y - atom_b.y) ** 2 + (atom_a.z - atom_b.z) ** 2)

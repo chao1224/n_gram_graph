@@ -16,8 +16,6 @@ class CBoW(nn.Module):
     def __init__(self, feature_num, embedding_dim, task_num, task_size_list):
         super(CBoW, self).__init__()
         self.task_num = task_num
-        # TODO: check nn.Embedding
-        # self.embeddings = nn.Embedding(feature_num, embedding_dim)
         self.embeddings = nn.Linear(feature_num, embedding_dim, bias=False)
         self.layers = nn.ModuleList()
         for task_size in task_size_list:
@@ -67,7 +65,6 @@ def get_data(data_path, padding_size):
                     cnt += 1
             x_temp = np.array(x_temp)
 
-            # TODO: accelerate this step
             y_temp = []
             atom_feat = node_attribute_matrix[i]
             for s in segmentation_list:
@@ -193,7 +190,6 @@ if __name__ == '__main__':
     random_dimension_list = [50, 100]
 
     if mode in ['qm8', 'qm9']:
-        # TODO: need to double check this
         feature_num = 32
         segmentation_list = [range(0, 10), range(10, 17), range(17, 24), range(24, 30), range(30, 32)]
     else:
@@ -225,7 +221,6 @@ if __name__ == '__main__':
                      task_num=segmentation_num, task_size_list=segmentation_list)
         if torch.cuda.is_available():
             model.cuda()
-        # print(model)
         optimizer = optim.Adam(model.parameters(), lr=0.003, weight_decay=1e-4)
 
         train_dataset = GraphDataset(mode, K_list=train_list, segmentation_list=segmentation_list, padding_size=padding_size)
