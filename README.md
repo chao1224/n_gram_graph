@@ -39,10 +39,15 @@ bash test.sh
 ### Citation
 
 ```
-@article{liu2019ngg,
-    title={N-Gram Graph: Simple Unsupervised Representation for Graphs, with Applications to Molecules},
-    author={Liu, Shengchao and Demirel, Mehmet Furkan and Liang, Yingyu},
-    booktitle={Neural Information Processing Systems},
-    year={2019}
+@incollection{NIPS2019_9054,
+    title = {N-Gram Graph: Simple Unsupervised Representation for Graphs, with Applications to Molecules},
+    author = {Liu, Shengchao and Demirel, Mehmet F and Liang, Yingyu},
+    booktitle = {Advances in Neural Information Processing Systems 32},
+    editor = {H. Wallach and H. Larochelle and A. Beygelzimer and F. d\textquotesingle Alch\'{e}-Buc and E. Fox and R. Garnett},
+    pages = {8464--8476},
+    year = {2019},
+    publisher = {Curran Associates, Inc.},
+    url = {http://papers.nips.cc/paper/9054-n-gram-graph-simple-unsupervised-representation-for-graphs-with-applications-to-molecules.pdf}
 }
+
 ```
