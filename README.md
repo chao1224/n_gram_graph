@@ -5,6 +5,14 @@ This repository contains the source code for the paper
 ](https://arxiv.org/abs/1806.09206). NeurIPS 2019 (Spotlight).
 
 ### 1. Env Setup
+Install Anaconda2-4.3.1 first.
+```
+wget https://repo.continuum.io/archive/Anaconda2-4.3.1-Linux-x86_64.sh
+bash Anaconda2-4.3.1-Linux-x86_64.sh -b -p ./anaconda
+export PATH=$PWD/anaconda/bin:$PATH
+```
+
+Then set up the env.
 ```
 conda env create -f gpu_env.yml
 source activate n_gram_project
