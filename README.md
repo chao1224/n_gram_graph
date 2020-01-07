@@ -5,7 +5,7 @@ This repository contains the source code for the paper
 ](https://arxiv.org/abs/1806.09206). NeurIPS 2019 (Spotlight).
 
 ### 1. Env Setup
-Install Anaconda2-4.3.1 first.
+Install Anaconda2-4.3.1 first, and below is an example on Linux.
 ```
 wget https://repo.continuum.io/archive/Anaconda2-4.3.1-Linux-x86_64.sh
 bash Anaconda2-4.3.1-Linux-x86_64.sh -b -p ./anaconda
