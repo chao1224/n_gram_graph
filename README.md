@@ -1,8 +1,9 @@
 # N-Gram Graph
 
 This repository contains the source code for the paper
-> Shengchao Liu, Mehmet Furkan Demirel, Yingyu Liang. [N-Gram Graph: Simple Unsupervised Representation for Graphs, with Applications to Molecules
-](https://arxiv.org/abs/1806.09206). NeurIPS 2019 (Spotlight).
+> Shengchao Liu, Mehmet Furkan Demirel, Yingyu Liang. N-Gram Graph: Simple Unsupervised Representation for Graphs, with Applications to Molecules. NeurIPS 2019 (Spotlight).
+
+You can check the paper on  [NeurIPS proceedings](https://papers.nips.cc/paper/9054-n-gram-graph-simple-unsupervised-representation-for-graphs-with-applications-to-molecules) or [ArXiv](https://arxiv.org/abs/1806.09206).
 
 ### 1. Env Setup
 Install Anaconda2-4.3.1 first, and below is an example on Linux.
@@ -28,7 +29,7 @@ bash data_preprocess.sh
 
 ### 3. Run Models
 
-The cmds below include the demo scripts for running task `Delaney`.
+The commands below include the demo scripts for running task `Delaney`.
 
 #### 3.1 Run the Node-Level and Graph-Level Embedding
 
@@ -37,14 +38,14 @@ cd n_gram_graph/embedding
 bash test.sh
 ```
 
-#### 3.2 Run the RF and XGB
+#### 3.2 Run RF and XGB
 
 ```
 cd n_gram_graph
 bash test.sh
 ```
 
-### Citation
+### 4 Citation
 
 ```
 @incollection{NIPS2019_9054,
