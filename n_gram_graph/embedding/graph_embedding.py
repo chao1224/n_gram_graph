@@ -3,10 +3,7 @@ from __future__ import print_function
 import argparse
 import time
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 from torch.autograd import Variable
-import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 from node_embedding import CBoW
@@ -18,8 +15,7 @@ mode2task_list = {
         'E1-CAM', 'E2-CAM', 'f1-CAM', 'f2-CAM'
     ],
     'qm9': [
-        'A', 'B', 'C', 'mu', 'alpha', 'homo', 'lumo', 'gap', 'r2', 'zpve', 'cv', 'u0', 'u298', 'h298', 'g298',
-        'u298_atom', 'h298_atom', 'g298_atom'
+        'mu', 'alpha', 'homo', 'lumo', 'gap', 'r2', 'zpve', 'cv', 'u0', 'u298', 'h298', 'g298',
     ]
 }
 
@@ -61,7 +57,7 @@ class GraphDataset(Dataset):
 
 def get_walk_representation(dataloader):
     X_embed = []
-    random_projected_list = []
+    embedded_graph_matrix_list = []
     for batch_id, (node_attribute_matrix, adjacent_matrix, distance_matrix) in enumerate(dataloader):
         node_attribute_matrix = Variable(node_attribute_matrix).float()
         adjacent_matrix = Variable(adjacent_matrix).float()
@@ -91,20 +87,20 @@ def get_walk_representation(dataloader):
         walk = torch.bmm(adjacent_matrix, walk) * tilde_node_attribute_matrix
         v6 = torch.sum(walk, dim=1)
 
-        random_projected_matrix = torch.stack([v1, v2, v3, v4, v5, v6], dim=1)
+        embedded_graph_matrix = torch.stack([v1, v2, v3, v4, v5, v6], dim=1)
 
         if torch.cuda.is_available():
             tilde_node_attribute_matrix = tilde_node_attribute_matrix.cpu()
-            random_projected_matrix = random_projected_matrix.cpu()
+            embedded_graph_matrix = embedded_graph_matrix.cpu()
         X_embed.extend(tilde_node_attribute_matrix.data.numpy())
-        random_projected_list.extend(random_projected_matrix.data.numpy())
+        embedded_graph_matrix_list.extend(embedded_graph_matrix.data.numpy())
 
-    embedded_node_attribute_matrix_list = np.array(X_embed)
-    random_projected_list = np.array(random_projected_list)
-    print('embedded_node_attribute_matrix_list: ', embedded_node_attribute_matrix_list.shape)
-    print('random_projected_list shape: {}'.format(random_projected_list.shape))
+    embedded_node_matrix_list = np.array(X_embed)
+    embedded_graph_matrix_list = np.array(embedded_graph_matrix_list)
+    print('embedded_node_matrix_list: ', embedded_node_matrix_list.shape)
+    print('embedded_graph_matrix_list shape: {}'.format(embedded_graph_matrix_list.shape))
 
-    return embedded_node_attribute_matrix_list, random_projected_list
+    return embedded_node_matrix_list, embedded_graph_matrix_list
 
 
 if __name__ == '__main__':
@@ -122,7 +118,7 @@ if __name__ == '__main__':
     if torch.cuda.is_available():
         torch.cuda.manual_seed(args.seed)
 
-    random_dimension_list = [50, 100]
+    embedding_dimension_list = [50, 100]
     if mode in ['hiv'] or 'pcba' in mode or 'clintox' in mode:
         feature_num = 42
         max_atom_num = 100
@@ -145,42 +141,31 @@ if __name__ == '__main__':
     train_list = filter(lambda x: x not in test_list, np.arange(5))
     print('training list: {}\ttest list: {}'.format(train_list, test_list))
 
-    for random_dimension in random_dimension_list:
-        model = CBoW(feature_num=feature_num, embedding_dim=random_dimension,
+    for embedding_dimension in embedding_dimension_list:
+        model = CBoW(feature_num=feature_num, embedding_dim=embedding_dimension,
                      task_num=segmentation_num, task_size_list=segmentation_list)
 
-        weight_file = 'model_weight/{}/{}/{}_CBoW_non_segment.pt'.format(mode, running_index, random_dimension)
+        weight_file = 'model_weight/{}/{}/{}_CBoW_non_segment.pt'.format(mode, running_index, embedding_dimension)
         print('weight file is {}'.format(weight_file))
         model.load_state_dict(torch.load(weight_file))
         if torch.cuda.is_available():
             model.cuda()
-        # print(model)
         model.eval()
 
-        start_time = time.time()
         for i in range(5):
-            data_preprocess_start_time = time.time()
             data_path = '../../datasets/{}/{}_graph.npz'.format(mode, i)
             adjacent_matrix_list, distance_matrix_list, bond_attribute_matrix_list, node_attribute_matrix_list, kwargs = get_data(data_path)
             dataset = GraphDataset(node_attribute_matrix_list=node_attribute_matrix_list, adjacent_matrix_list=adjacent_matrix_list, distance_matrix_list=distance_matrix_list)
             dataloader = torch.utils.data.DataLoader(dataset, batch_size=128, shuffle=False)
-            data_preprocess_end_time = time.time()
-            print('Data preprocessing time: {}'.format(data_preprocess_end_time - data_preprocess_start_time))
 
-            embedded_node_attribute_matrix_list, random_projected_list = get_walk_representation(dataloader)
-            print('random_projected_list\t', random_projected_list.shape)
+            embedded_node_matrix_list, embedded_graph_matrix_list = get_walk_representation(dataloader)
+            print('embedded_graph_matrix_list\t', embedded_graph_matrix_list.shape)
 
-            out_file_path = '../../datasets/{}/{}/{}_grammed_cbow_{}_graph'.format(mode, running_index, i, random_dimension)
+            out_file_path = '../../datasets/{}/{}/{}_grammed_cbow_{}_graph'.format(mode, running_index, i, embedding_dimension)
             kwargs['adjacent_matrix_list'] = adjacent_matrix_list
             kwargs['distance_matrix_list'] = distance_matrix_list
-            kwargs['node_attribute_matrix_list'] = embedded_node_attribute_matrix_list
-            kwargs['random_projected_list'] = random_projected_list
+            kwargs['embedded_node_matrix_list'] = embedded_node_matrix_list
+            kwargs['embedded_graph_matrix_list'] = embedded_graph_matrix_list
             np.savez_compressed(out_file_path, **kwargs)
             print(kwargs.keys())
             print()
-        end_time = time.time()
-        processing_time = end_time - start_time
-        print('For random dimension as {}, the processing time is {}.'.format(random_dimension, processing_time))
-        print()
-        print()
-        print()

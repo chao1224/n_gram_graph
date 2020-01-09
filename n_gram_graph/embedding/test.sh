@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-task_list=(delaney muv/MUV-548 tox21/SR-HSE)
 task_list=(delaney)
 running_index_list=(0 1 2 3 4)
 

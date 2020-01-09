@@ -1,10 +1,8 @@
 from __future__ import print_function
 
 import argparse
-import time
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.autograd import Variable
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
@@ -104,7 +102,6 @@ class GraphDataset(Dataset):
 
 
 def train():
-    start_time = time.time()
     criterion = nn.CrossEntropyLoss()
     model.train()
 
@@ -136,14 +133,11 @@ def train():
             optimal_loss = train_loss
             print('Saving model at epoch {}\toptimal loss is {}.'.format(epoch, optimal_loss))
             torch.save(model.state_dict(), weight_file)
-    end_time = time.time()
-    processing_time = end_time - start_time
-    print('For random dimension as {}, the training time is {}.'.format(random_dimension, processing_time))
+    print('For random dimension as {}.'.format(random_dimension))
     return
 
 
 def test(dataloader):
-    start_time = time.time()
     model.eval()
     accuracy, total = 0, 0
     for batch_id, (x_data, y_actual) in enumerate(dataloader):
@@ -162,9 +156,7 @@ def test(dataloader):
     accuracy = 1. * accuracy / total
     print('Accuracy: {}'.format(accuracy))
 
-    end_time = time.time()
-    processing_time = end_time - start_time
-    print('For random dimension as {}, the test time is {}.'.format(random_dimension, processing_time))
+    print('For random dimension as {}.'.format(random_dimension))
 
     return
 
