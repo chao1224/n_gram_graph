@@ -19,7 +19,6 @@ def run_n_gram_xgb():
     label_name_list = [label_name]
     print('label_name_list ', label_name_list)
 
-    # read data
     test_index = [running_index]
     train_index = filter(lambda x: x not in test_index, np.arange(5))
     train_file_list = file_list[train_index]
@@ -28,15 +27,13 @@ def run_n_gram_xgb():
     print('test files ', test_file_list)
 
     X_train, y_train = extract_feature_and_label_npy(train_file_list,
-                                                     feature_name='random_projected_list',
+                                                     feature_name='embedded_graph_matrix_list',
                                                      label_name_list=label_name_list,
-                                                     n_gram_num=n_gram_num,
-                                                     is_sum_up_feature_segment=is_sum_up_feature_segment)
+                                                     n_gram_num=n_gram_num)
     X_test, y_test = extract_feature_and_label_npy(test_file_list,
-                                                   feature_name='random_projected_list',
+                                                   feature_name='embedded_graph_matrix_list',
                                                    label_name_list=label_name_list,
-                                                   n_gram_num=n_gram_num,
-                                                   is_sum_up_feature_segment=is_sum_up_feature_segment)
+                                                   n_gram_num=n_gram_num)
     print('done data preparation')
 
     task = XGBoostRegression(conf=conf)
@@ -56,7 +53,6 @@ def run_n_gram_rf():
     label_name_list = [label_name]
     print('label_name_list ', label_name_list)
 
-    # read data
     test_index = [running_index]
     train_index = filter(lambda x: x not in test_index, np.arange(5))
     train_file_list = file_list[train_index]
@@ -65,15 +61,13 @@ def run_n_gram_rf():
     print('test files ', test_file_list)
 
     X_train, y_train = extract_feature_and_label_npy(train_file_list,
-                                                     feature_name='random_projected_list',
+                                                     feature_name='embedded_graph_matrix_list',
                                                      label_name_list=label_name_list,
-                                                     n_gram_num=n_gram_num,
-                                                     is_sum_up_feature_segment=is_sum_up_feature_segment)
+                                                     n_gram_num=n_gram_num)
     X_test, y_test = extract_feature_and_label_npy(test_file_list,
-                                                   feature_name='random_projected_list',
+                                                   feature_name='embedded_graph_matrix_list',
                                                    label_name_list=label_name_list,
-                                                   n_gram_num=n_gram_num,
-                                                   is_sum_up_feature_segment=is_sum_up_feature_segment)
+                                                   n_gram_num=n_gram_num)
     print('done data preparation')
 
     task = RandomForestRegression(conf=conf)
@@ -92,16 +86,15 @@ if __name__ == '__main__':
     parser.add_argument('--model',  required=True)
     parser.add_argument('--task', default='delaney')
     parser.add_argument('--n_gram_num', type=int, default=6)
-    parser.add_argument('--random_projection_dimension', type=int, default=100)
+    parser.add_argument('--embedding_dimension', type=int, default=100)
     parser.add_argument('--running_index', type=int, default=0)
     given_args = parser.parse_args()
 
     config_json_file = given_args.config_json_file
     weight_file = given_args.weight_file
     n_gram_num = given_args.n_gram_num
-    random_projection_dimension = given_args.random_projection_dimension
+    embedding_dimension = given_args.embedding_dimension
     running_index = given_args.running_index
-    is_sum_up_feature_segment = False
 
     K = 5
     task = given_args.task
@@ -116,7 +109,7 @@ if __name__ == '__main__':
         dataset = task
 
     if 'n_gram' in model:
-        directory = '../datasets/{}/{}/{{}}_grammed_cbow_{}_graph.npz'.format(dataset, running_index, random_projection_dimension)
+        directory = '../datasets/{}/{}/{{}}_grammed_cbow_{}_graph.npz'.format(dataset, running_index, embedding_dimension)
         if dataset in ['delaney', 'malaria', 'cep', 'qm7']:
             label_name = 'label_name'
     else:
@@ -126,7 +119,6 @@ if __name__ == '__main__':
         file_list.append(directory.format(i))
     file_list = np.array(file_list)
 
-    start_time = time.time()
     if model == 'n_gram_xgb':
         run_n_gram_xgb()
     elif model == 'n_gram_rf':
@@ -136,8 +128,6 @@ if __name__ == '__main__':
             'n_gram_xgb',
             'n_gram_rf'
         ))
-    end_time = time.time()
-    print('Running time: {}'.format(end_time - start_time))
 
     import os
     os.rename('output_on_test.npz', '../output/{}/{}/{}.npz'.format(model, running_index, task))

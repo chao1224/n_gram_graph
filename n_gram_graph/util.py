@@ -4,8 +4,7 @@ import numpy as np
 import pandas as pd
 
 
-def extract_feature_and_label_npy(data_file_list, feature_name, label_name_list, n_gram_num,
-                                  is_sum_up_feature_segment=False):
+def extract_feature_and_label_npy(data_file_list, feature_name, label_name_list, n_gram_num):
     X_data = []
     y_data = []
     for data_file in data_file_list:
@@ -16,20 +15,16 @@ def extract_feature_and_label_npy(data_file_list, feature_name, label_name_list,
             X_data_temp = X_data_temp[:, :n_gram_num, ...]
             print('truncated size\t', X_data_temp.shape)
 
-            molecule_num, _, random_projection_dimension, segmentation_num = X_data_temp.shape
-            if is_sum_up_feature_segment:
-                X_data_temp = X_data_temp.sum(axis=-1)
-                print('sum up along feature segment axis, shape is\t', X_data_temp.shape)
-                segmentation_num = 1
+            molecule_num, _, embedding_dimension, segmentation_num = X_data_temp.shape
 
-            X_data_temp = X_data_temp.reshape((molecule_num, n_gram_num*random_projection_dimension*segmentation_num), order='F')
+            X_data_temp = X_data_temp.reshape((molecule_num, n_gram_num*embedding_dimension*segmentation_num), order='F')
 
         elif X_data_temp.ndim == 3:
             print('original size\t', X_data_temp.shape)
             X_data_temp = X_data_temp[:, :n_gram_num, ...]
             print('truncated size\t', X_data_temp.shape)
-            molecule_num, _, random_projection_dimension = X_data_temp.shape
-            X_data_temp = X_data_temp.reshape((molecule_num, n_gram_num*random_projection_dimension), order='F')
+            molecule_num, _, embedding_dimension = X_data_temp.shape
+            X_data_temp = X_data_temp.reshape((molecule_num, n_gram_num*embedding_dimension), order='F')
 
 
         X_data.extend(X_data_temp)
@@ -49,7 +44,6 @@ def extract_feature_and_label_npy(data_file_list, feature_name, label_name_list,
 def extract_feature_and_label(data_pd,
                               feature_name,
                               label_name_list):
-    # By default, feature should be fingerprints
     X_data = data_pd[feature_name].tolist()
     X_data = map(lambda x: list(x), X_data)
     X_data = np.array(X_data)
