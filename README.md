@@ -27,23 +27,88 @@ bash download_data.sh
 bash data_preprocess.sh
 ```
 
+Below is the specification of all the datasets & tasks.
+
+| Dataset | # of Tasks | Task Type |
+| :---: | :---: | :---: |
+| Delaney | 1 | Regression |
+| Malaria | 1 | Regression |
+| CEP | 1 | Regression |
+| QM7 | 1 | Regression |
+| QM8 | 12 | Regression |
+| QM9 | 12 | Regression |
+| Tox21 | 12 | Classification |
+| Clintox | 2 | Classification |
+| MUV | 17 | Classification |
+| HIV | 1 | Classification |
+
 ### 3. Run Models
 
-The commands below include the demo scripts for running task `Delaney`.
+There are two `test.sh` scripts (under path `n_gram_graph/` and `n_gram_graph/embedding/`) for quick test on task `Delaney`.
 
 #### 3.1 Run the Node-Level and Graph-Level Embedding
 
++ First specify the arguments.
 ```
 cd n_gram_graph/embedding
-bash test.sh
+
+export task=...
+export running_index=...
 ```
+
++ Run the node-level embedding:
+```
+mkdir -p ./model_weight/"$task"/"$running_index"
+
+python node_embedding.py \
+--mode="$task" \
+--running_index="$running_index"
+```
+
++ Run the graph-level embedding:
+```
+mkdir -p ../../datasets/"$task"/"$running_index"
+
+python graph_embedding.py \
+--mode="$task" \
+--running_index="$running_index"
+```
+
+Please check `run_embedding.sh` for detailed specifications.
 
 #### 3.2 Run RF and XGB
 
++ First specify arguments.
 ```
 cd n_gram_graph
-bash test.sh
+
+export task=...
+export model=...
+export weight_file=...
+export running_index=...
 ```
+
++ For classification tasks:
+```
+python main_classification.py \
+--task="$task" \
+--config_json_file=../config/"$model"/"$task".json \
+--weight_file="$weight_file" \
+--running_index="$running_index" \
+--model="$model" 
+```
+
++ For regression tasks:
+```
+python main_regression.py \
+--task="$task" \
+--config_json_file=../config/"$model"/"$task".json \
+--weight_file="$weight_file" \
+--running_index="$running_index" \
+--model="$model" 
+```
+
+Please check `run_n_gram_classification.sh` and `run_n_gram_regression.sh` for detailed specifications.
 
 ### 4 Citation
 
