@@ -110,7 +110,7 @@ python main_regression.py \
 
 Please check `run_n_gram_classification.sh` and `run_n_gram_regression.sh` for detailed specifications.
 
-### 4 Citation
+### 4. Citation
 
 ```
 @incollection{NIPS2019_9054,
