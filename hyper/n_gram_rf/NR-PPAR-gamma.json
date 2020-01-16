@@ -1,0 +1,1 @@
+{"enrichment_factor": {"ratio_list": [0.02, 0.01, 0.0015, 0.001]}, "random_seed": 1337, "min_samples_leaf": 1, "n_estimators": 400, "max_features": "log2", "class_weight": "balanced"}
