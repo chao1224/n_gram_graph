@@ -1,11 +1,30 @@
 # N-Gram Graph
 
-This repository contains the source code for the paper
+#### Authors: [Shengchao Liu](https://chao1224.github.io/), [Mehmet Furkan Demirel](http://pages.cs.wisc.edu/~demirel/), [Yingyu Liang](http://pages.cs.wisc.edu/~yliang/).
+
+This is the source code for the paper
 > Shengchao Liu, Mehmet Furkan Demirel, Yingyu Liang. N-Gram Graph: Simple Unsupervised Representation for Graphs, with Applications to Molecules. NeurIPS 2019 (Spotlight).
 
-You can check the paper on  [NeurIPS proceedings](https://papers.nips.cc/paper/9054-n-gram-graph-simple-unsupervised-representation-for-graphs-with-applications-to-molecules) or [ArXiv](https://arxiv.org/abs/1806.09206).
+Prevailing methods for small-molecule property prediction are not quite stable, especially when we focus on each individual task for each datasets.
 
-### 1. Env Setup
+Here we propose another research line doing N-Gram representation on molecular graphs.
+The motivation is that, instead of the K-hop neighborhood, the N-Gram path/walk provides a finer-grained view with more flexibility.
+We also provide a solid analysis on the representation power of `N-Gram Graph`.
+
+Another thing to point out is that the graph-level representation is indeed learning in an unsupervised (self-supervised) way.
+The `N-Gram Graph` pipeline can be divided into three main parts:
+1. Vertex embedding, unsupervised (self-supervised)
+2. Graph embedding, unsupervised
+3. A simple classifier
+
+![Pipeline](figs/pipeline.png)
+
+
+For the empirical results, `N-Gram Graph` with XGBoost is in top-1 for 21 out of 60 tasks, and is in top-3 for 48.
+Recall that our setting is for each individual task, not for each dataset.
+You can check the full paper on [NeurIPS proceedings](https://papers.nips.cc/paper/9054-n-gram-graph-simple-unsupervised-representation-for-graphs-with-applications-to-molecules) or [ArXiv](https://arxiv.org/abs/1806.09206).
+
+## 1. Env Setup
 Install Anaconda2-4.3.1 first, and below is an example on Linux.
 ```
 wget https://repo.continuum.io/archive/Anaconda2-4.3.1-Linux-x86_64.sh
@@ -20,7 +39,7 @@ source activate n_gram_project
 pip install --user -e .
 ```
 
-### 2. Data Preparation
+## 2. Data Preparation
 ```
 cd datasets
 bash download_data.sh
@@ -42,7 +61,7 @@ Below is the specification of all the datasets & tasks.
 | MUV | 17 | Classification |
 | HIV | 1 | Classification |
 
-### 3. Run Models
+## 3. Run Models
 
 There are two `test.sh` scripts (under path `n_gram_graph/` and `n_gram_graph/embedding/`) for quick test on task `Delaney`.
 
@@ -110,7 +129,7 @@ python main_regression.py \
 
 Please check `run_n_gram_classification.sh` and `run_n_gram_regression.sh` for detailed specifications.
 
-### 4. Citation
+## 4. Cite Us
 
 ```
 @incollection{NIPS2019_9054,
